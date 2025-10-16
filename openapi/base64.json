@@ -1,0 +1,117 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "WhatsApp OSINT API",
+        "description": "API to obtain WhatsApp OSINT information by phone number",
+        "version": "1.0.0",
+        "contact": {
+            "name": "Inutil Labs",
+            "email": "info@inutil.info"
+        }
+    },
+    "servers": [
+        {
+            "url": "https://whatsapp-osint.p.rapidapi.com",
+            "description": "Main API server"
+        }
+    ],
+    "paths": {
+        "/wspic/b64": {
+            "get": {
+                "tags": [
+                    "Profile Picture"
+                ],
+                "summary": "Base64 encoded profile picture",
+                "description": "Gets WhatsApp profile picture encoded in Base64",
+                "parameters": [
+                    {
+                        "name": "X-RapidAPI-Key",
+                        "in": "header",
+                        "description": "RapidAPI API key",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "YOUR_RAPIDAPI_KEY_HERE"
+                        }
+                    },
+                    {
+                        "name": "X-RapidAPI-Host",
+                        "in": "header",
+                        "description": "RapidAPI host",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "default": "whatsapp-osint.p.rapidapi.com"
+                        }
+                    },
+                    {
+                        "name": "phone",
+                        "in": "query",
+                        "description": "Phone number with country code",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "34631428039",
+                            "pattern": "^[0-9]{8,15}$"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Profile picture retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string",
+                                            "description": "Base64 encoded image",
+                                            "example": "iVBORw0KGgoAAAANSUhEUgAA..."
+                                        },
+                                        "image": {
+                                            "type": "string",
+                                            "description": "Base64 encoded image (alias)",
+                                            "example": "iVBORw0KGgoAAAANSUhEUgAA..."
+                                        },
+                                        "base64": {
+                                            "type": "string",
+                                            "description": "Base64 encoded image (alias)",
+                                            "example": "iVBORw0KGgoAAAANSUhEUgAA..."
+                                        }
+                                    }
+                                }
+                            },
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string",
+                                    "description": "Base64 encoded image as plain text"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Profile picture not found or profile is hidden"
+                    },
+                    "401": {
+                        "description": "Invalid or missing API key"
+                    },
+                    "429": {
+                        "description": "Rate limit exceeded"
+                    }
+                },
+                "operationId": "getProfilePictureBase64"
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "RapidAPIKey": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "X-RapidAPI-Key",
+                "description": "RapidAPI API key"
+            }
+        }
+    }
+}

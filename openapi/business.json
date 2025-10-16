@@ -1,0 +1,141 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "WhatsApp OSINT API",
+        "description": "API to obtain WhatsApp OSINT information by phone number",
+        "version": "1.0.0",
+        "contact": {
+            "name": "Inutil Labs",
+            "email": "info@inutil.info"
+        }
+    },
+    "servers": [
+        {
+            "url": "https://whatsapp-osint.p.rapidapi.com",
+            "description": "Main API server"
+        }
+    ],
+    "paths": {
+        "/bizos": {
+            "post": {
+                "tags": [
+                    "Business Intelligence"
+                ],
+                "summary": "WhatsApp Business Verification",
+                "description": "Verifies if a number belongs to a WhatsApp Business account and gets the Meta-verified name",
+                "parameters": [
+                    {
+                        "name": "X-RapidAPI-Key",
+                        "in": "header",
+                        "description": "RapidAPI API key",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "YOUR_RAPIDAPI_KEY_HERE"
+                        }
+                    },
+                    {
+                        "name": "X-RapidAPI-Host",
+                        "in": "header",
+                        "description": "RapidAPI host",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "default": "whatsapp-osint.p.rapidapi.com"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Phone number to verify if it's WhatsApp Business",
+                    "content": {
+                        "text/plain": {
+                            "schema": {
+                                "type": "string",
+                                "example": "34631428039",
+                                "pattern": "^[0-9]{8,15}$"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "34631428039",
+                                        "pattern": "^[0-9]{8,15}$"
+                                    }
+                                },
+                                "required": [
+                                    "phone"
+                                ]
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "WhatsApp Business verification retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "is_business": {
+                                            "type": "boolean",
+                                            "description": "Indicates if the number belongs to a WhatsApp Business account",
+                                            "example": true
+                                        },
+                                        "business_name": {
+                                            "type": "string",
+                                            "description": "Meta-verified name of the business account",
+                                            "example": "Mi Empresa S.L."
+                                        },
+                                        "verification_status": {
+                                            "type": "string",
+                                            "enum": [
+                                                "verified",
+                                                "unverified",
+                                                "not_business"
+                                            ],
+                                            "description": "Verification status of the business account",
+                                            "example": "verified"
+                                        },
+                                        "business_category": {
+                                            "type": "string",
+                                            "description": "Business category if available",
+                                            "example": "Retail"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid or missing phone number"
+                    },
+                    "404": {
+                        "description": "Business information not found or number is not WhatsApp Business"
+                    },
+                    "401": {
+                        "description": "Invalid or missing API key"
+                    },
+                    "429": {
+                        "description": "Rate limit exceeded"
+                    }
+                },
+                "operationId": "verifyWhatsAppBusiness"
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "RapidAPIKey": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "X-RapidAPI-Key",
+                "description": "RapidAPI API key"
+            }
+        }
+    }
+}

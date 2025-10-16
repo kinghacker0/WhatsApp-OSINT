@@ -1,0 +1,125 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "WhatsApp OSINT API",
+        "description": "API to obtain WhatsApp OSINT information by phone number",
+        "version": "1.0.0",
+        "contact": {
+            "name": "Inutil Labs",
+            "email": "info@inutil.info"
+        }
+    },
+    "servers": [
+        {
+            "url": "https://whatsapp-osint.p.rapidapi.com",
+            "description": "Main API server"
+        }
+    ],
+    "paths": {
+        "/devices": {
+            "get": {
+                "tags": [
+                    "Device Information"
+                ],
+                "summary": "Device Information",
+                "description": "Gets information about devices associated with the WhatsApp number",
+                "parameters": [
+                    {
+                        "name": "X-RapidAPI-Key",
+                        "in": "header",
+                        "description": "RapidAPI API key",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "YOUR_RAPIDAPI_KEY_HERE"
+                        }
+                    },
+                    {
+                        "name": "X-RapidAPI-Host",
+                        "in": "header",
+                        "description": "RapidAPI host",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "default": "whatsapp-osint.p.rapidapi.com"
+                        }
+                    },
+                    {
+                        "name": "phone",
+                        "in": "query",
+                        "description": "Phone number with country code",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "13022612667",
+                            "pattern": "^[0-9]{8,15}$"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Device information retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "devices": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "device_type": {
+                                                        "type": "string",
+                                                        "example": "iPhone"
+                                                    },
+                                                    "os": {
+                                                        "type": "string",
+                                                        "example": "iOS 15.0"
+                                                    },
+                                                    "last_seen": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2024-01-15T10:30:00Z"
+                                                    },
+                                                    "status": {
+                                                        "type": "string",
+                                                        "example": "online"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "total_devices": {
+                                            "type": "integer",
+                                            "example": 2
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Device information not found"
+                    },
+                    "401": {
+                        "description": "Invalid or missing API key"
+                    },
+                    "429": {
+                        "description": "Rate limit exceeded"
+                    }
+                },
+                "operationId": "getDeviceInformation"
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "RapidAPIKey": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "X-RapidAPI-Key",
+                "description": "RapidAPI API key"
+            }
+        }
+    }
+}

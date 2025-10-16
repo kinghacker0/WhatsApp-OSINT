@@ -1,0 +1,142 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "WhatsApp OSINT API",
+        "description": "API to obtain WhatsApp OSINT information by phone number",
+        "version": "1.0.0",
+        "contact": {
+            "name": "Inutil Labs",
+            "email": "info@inutil.info"
+        }
+    },
+    "servers": [
+        {
+            "url": "https://whatsapp-osint.p.rapidapi.com",
+            "description": "Main API server"
+        }
+    ],
+    "paths": {
+        "/privacy": {
+            "get": {
+                "tags": [
+                    "Privacy Settings"
+                ],
+                "summary": "Privacy Settings",
+                "description": "Gets information about privacy settings of the WhatsApp number",
+                "parameters": [
+                    {
+                        "name": "X-RapidAPI-Key",
+                        "in": "header",
+                        "description": "RapidAPI API key",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "YOUR_RAPIDAPI_KEY_HERE"
+                        }
+                    },
+                    {
+                        "name": "X-RapidAPI-Host",
+                        "in": "header",
+                        "description": "RapidAPI host",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "default": "whatsapp-osint.p.rapidapi.com"
+                        }
+                    },
+                    {
+                        "name": "phone",
+                        "in": "query",
+                        "description": "Phone number with country code",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "13022612667",
+                            "pattern": "^[0-9]{8,15}$"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Privacy settings retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "profile_visibility": {
+                                            "type": "string",
+                                            "enum": [
+                                                "everyone",
+                                                "contacts",
+                                                "nobody"
+                                            ],
+                                            "example": "everyone",
+                                            "description": "Profile visibility"
+                                        },
+                                        "last_seen": {
+                                            "type": "string",
+                                            "enum": [
+                                                "everyone",
+                                                "contacts",
+                                                "contacts_except",
+                                                "nobody"
+                                            ],
+                                            "example": "everyone",
+                                            "description": "Last seen configuration"
+                                        },
+                                        "read_receipts": {
+                                            "type": "boolean",
+                                            "example": true,
+                                            "description": "Read receipts status"
+                                        },
+                                        "status_visibility": {
+                                            "type": "string",
+                                            "enum": [
+                                                "everyone",
+                                                "contacts",
+                                                "nobody"
+                                            ],
+                                            "example": "everyone",
+                                            "description": "Status visibility"
+                                        },
+                                        "profile_picture": {
+                                            "type": "string",
+                                            "enum": [
+                                                "everyone",
+                                                "contacts",
+                                                "nobody"
+                                            ],
+                                            "example": "everyone",
+                                            "description": "Profile picture visibility"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Privacy information not found"
+                    },
+                    "401": {
+                        "description": "Invalid or missing API key"
+                    },
+                    "429": {
+                        "description": "Rate limit exceeded"
+                    }
+                },
+                "operationId": "getPrivacySettings"
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "RapidAPIKey": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "X-RapidAPI-Key",
+                "description": "RapidAPI API key"
+            }
+        }
+    }
+}

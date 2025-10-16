@@ -1,0 +1,112 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "WhatsApp OSINT API",
+    "description": "API to obtain WhatsApp OSINT information by phone number",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Inutil Labs",
+      "email": "info@inutil.info"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://whatsapp-osint.p.rapidapi.com",
+      "description": "Main API server"
+    }
+  ],
+  "paths": {
+    "/about": {
+      "get": {
+        "tags": [
+          "Status"
+        ],
+        "summary": "User Status",
+        "description": "Gets the status field of a WhatsApp user",
+        "parameters": [
+          {
+            "name": "X-RapidAPI-Key",
+            "in": "header",
+            "description": "RapidAPI API key",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "YOUR_RAPIDAPI_KEY_HERE"
+            }
+          },
+          {
+            "name": "X-RapidAPI-Host",
+            "in": "header",
+            "description": "RapidAPI host",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "whatsapp-osint.p.rapidapi.com"
+            }
+          },
+          {
+            "name": "phone",
+            "in": "query",
+            "description": "Phone number with country code",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "34605797764",
+              "pattern": "^[0-9]{8,15}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User status retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "description": "User's status message",
+                      "example": "Available"
+                    },
+                    "last_seen": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Last time the user was seen",
+                      "example": "2024-01-15T10:30:00Z"
+                    },
+                    "is_online": {
+                      "type": "boolean",
+                      "description": "Whether the user is currently online",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User status not found or user not available"
+          },
+          "401": {
+            "description": "Invalid or missing API key"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          }
+        },
+        "operationId": "getUserStatus"
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "RapidAPIKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-RapidAPI-Key",
+        "description": "RapidAPI API key"
+      }
+    }
+  }
+}
