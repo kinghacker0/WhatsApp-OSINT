@@ -1,4 +1,4 @@
-<h1 align="center">WHATS LOOKUP 🕵️‍♂️</h1>
+<h1 align="center">WHATS OSINT 🕵️‍♂️</h1>
 
 <p align="center">
   <strong>OSINT tool for WhatsApp</strong> that allows you to obtain profile photos, verify Business accounts, check status and user information, analyze linked devices, review privacy settings, and access full data using the <strong>WhatsApp OSINT</strong> API from RapidAPI.
@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  <img src="assets/Demo_WhatsLookup.png" title="WHATS LOOKUP" alt="WHATS LOOKUP" width="600"/>
+  <img src="assets/Demo_WhatsLookup.png" title="WHATS OSINT" alt="WHATS OSINT" width="600"/>
 </p>
 
 <p align="center">
@@ -128,9 +128,12 @@ This tool is created **only** for:
 Clone the repository:
 
 ```bash
-git clone https://github.com/HackUnderway/whatslookup.git
-cd whatslookup
-pip install -r requirements.txt
+git clone https://github.com/kinghacker0/whatsapp-osint
+cd whatsapp-osint
+python3 -m venv myvenv
+source myvenv/bin/activate
+pip3 install -r requirements.txt
+
 ```
 
 ---
@@ -140,7 +143,7 @@ pip install -r requirements.txt
 Run the script:
 
 ```bash
-python3 whats_lookup.py
+python3 whatsapp-osint.py
 ```
 
 * Choose an option from the menu (1–6)
