@@ -1,6 +1,7 @@
 import os
 import re
 import base64
+import sys
 import requests
 import json
 import time
@@ -50,6 +51,15 @@ def sanitize_phone(raw: str) -> str:
 
 def is_valid_phone(p: str) -> bool:
     return p.isdigit() and 8 <= len(p) <= 15
+
+def has_authorization_ack() -> bool:
+    if "--i-am-authorized" in sys.argv[1:]:
+        return True
+
+    print(Fore.YELLOW + "\n⚠️ Authorized use required." + Style.RESET_ALL)
+    print("Confirm you are authorized to investigate this number and will use this tool lawfully.")
+    ack = input("Type 'I AM AUTHORIZED' to continue: ").strip()
+    return ack == "I AM AUTHORIZED"
 
 def show_menu():
     print(Fore.CYAN + "🔍 Select the type of query:" + Style.RESET_ALL)
@@ -326,6 +336,10 @@ def main():
 
     if not is_valid_phone(phone):
         print("❌ Invalid format. Example: 51916574069")
+        return
+
+    if not has_authorization_ack():
+        print("❌ Authorization acknowledgement not provided. Aborting.")
         return
 
     print(f"\n🔍 {Fore.GREEN}Processing request...{Style.RESET_ALL}")
