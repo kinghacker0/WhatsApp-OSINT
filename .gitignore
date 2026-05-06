@@ -1,0 +1,6 @@
+.env
+myvenv/
+__pycache__/
+*.egg-info/
+*.pyc
+*.jpg
