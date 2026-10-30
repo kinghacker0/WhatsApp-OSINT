@@ -313,39 +313,45 @@ def main():
         print("❌ RAPIDAPI_KEY not found in .env")
         return
 
-    show_menu()
-
     while True:
-        choice = input(f"{Fore.CYAN}Select an option (1–6): {Style.RESET_ALL}").strip()
-        if choice in ENDPOINTS:
-            break
-        print("❌ Invalid option. Choose a number between 1 and 6.")
+        show_menu()
+        print(f"{Fore.YELLOW}0.{Style.RESET_ALL} Exit")
+        print()
 
-    phone = input("Enter the number (with country code, without '+', e.g. 51916574069): ").strip()
-    phone = sanitize_phone(phone)
-
-    if not is_valid_phone(phone):
-        print("❌ Invalid format. Example: 51916574069")
-        return
-
-    print(f"\n🔍 {Fore.GREEN}Processing request...{Style.RESET_ALL}")
-    print(f"📱 Number: {phone}")
-    print(f"🎯 Query: {ENDPOINTS[choice]['name']}\n")
-
-    if choice == "1":
-        process_profile_picture(phone, api_key)
-    elif choice == "2":
-        process_user_status(phone, api_key)
-    elif choice == "3":
-        process_business_verification(phone, api_key)
-    elif choice == "4":
-        process_device_info(phone, api_key)
-    elif choice == "5":
-        process_osint_info(phone, api_key)
-    elif choice == "6":
-        process_privacy_settings(phone, api_key)
-
-    print(f"\n✅ {Fore.GREEN}Query completed.{Style.RESET_ALL}")
+        while True:
+            choice = input(f"{Fore.CYAN}Select an option (1–6, 0 to exit): {Style.RESET_ALL}").strip()
+            if choice == "0":
+                print(f"\n{Fore.GREEN}Goodbye! 👋{Style.RESET_ALL}")
+                return
+            if choice in ENDPOINTS:
+                break
+            print("❌ Invalid option. Choose a number between 1 and 6.")
+    
+        phone = input("Enter the number (with country code, without '+', e.g. 51916574069): ").strip()
+        phone = sanitize_phone(phone)
+    
+        if not is_valid_phone(phone):
+            print("❌ Invalid format. Example: 51916574069")
+            continue
+    
+        print(f"\n🔍 {Fore.GREEN}Processing request...{Style.RESET_ALL}")
+        print(f"📱 Number: {phone}")
+        print(f"🎯 Query: {ENDPOINTS[choice]['name']}\n")
+    
+        if choice == "1":
+            process_profile_picture(phone, api_key)
+        elif choice == "2":
+            process_user_status(phone, api_key)
+        elif choice == "3":
+            process_business_verification(phone, api_key)
+        elif choice == "4":
+            process_device_info(phone, api_key)
+        elif choice == "5":
+            process_osint_info(phone, api_key)
+        elif choice == "6":
+            process_privacy_settings(phone, api_key)
+    
+        print(f"\n✅ {Fore.GREEN}Query completed.{Style.RESET_ALL}")
 
 if __name__ == "__main__":
     main()
