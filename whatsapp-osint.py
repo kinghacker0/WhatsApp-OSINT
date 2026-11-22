@@ -83,6 +83,22 @@ def save_b64(b64_str: str, path: str) -> bool:
     except Exception:
         return False
 
+def format_api_error(resp) -> str:
+    body = resp.text.strip()
+    if resp.status_code == 401:
+        return "Invalid or missing RapidAPI key."
+    if resp.status_code == 403:
+        try:
+            message = resp.json().get("message")
+        except Exception:
+            message = body
+        if message:
+            return f"API access denied: {message}"
+        return "API access denied. Check the RapidAPI subscription for this endpoint."
+    if resp.status_code == 429:
+        return "API rate limit exceeded. Try again later."
+    return body or f"Request failed with HTTP {resp.status_code}"
+
 def process_profile_picture(phone: str, api_key: str):
     """Process profile photo"""
     try:
@@ -95,7 +111,7 @@ def process_profile_picture(phone: str, api_key: str):
     ctype = resp.headers.get("Content-Type", "")
 
     if resp.status_code != 200:
-        print("❌ Server Error:", resp.text.strip())
+        print("❌ Server Error:", format_api_error(resp))
         return
 
     body = resp.text.strip()
@@ -136,7 +152,7 @@ def process_user_status(phone: str, api_key: str):
 
     print("HTTP:", resp.status_code)
     if resp.status_code != 200:
-        print("❌ Server Error:", resp.text.strip())
+        print("❌ Server Error:", format_api_error(resp))
         return
 
     try:
@@ -177,7 +193,7 @@ def process_business_verification(phone: str, api_key: str):
 
     print("HTTP:", resp.status_code)
     if resp.status_code != 200:
-        print("❌ Server Error:", resp.text.strip())
+        print("❌ Server Error:", format_api_error(resp))
         return
 
     try:
@@ -229,7 +245,7 @@ def process_device_info(phone: str, api_key: str):
 
     print("HTTP:", resp.status_code)
     if resp.status_code != 200:
-        print("❌ Server Error:", resp.text.strip())
+        print("❌ Server Error:", format_api_error(resp))
         return
 
     try:
@@ -274,7 +290,7 @@ def process_osint_info(phone: str, api_key: str):
 
     print("HTTP:", resp.status_code)
     if resp.status_code != 200:
-        print("❌ Server Error:", resp.text.strip())
+        print("❌ Server Error:", format_api_error(resp))
         return
 
     try:
@@ -304,7 +320,7 @@ def process_privacy_settings(phone: str, api_key: str):
 
     print("HTTP:", resp.status_code)
     if resp.status_code != 200:
-        print("❌ Server Error:", resp.text.strip())
+        print("❌ Server Error:", format_api_error(resp))
         return
 
     try:

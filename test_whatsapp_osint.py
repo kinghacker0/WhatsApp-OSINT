@@ -18,13 +18,13 @@ SPEC.loader.exec_module(module)
 
 class WhatsAppOsintTests(unittest.TestCase):
     def test_sanitizes_and_validates_requested_number(self):
-        phone = module.sanitize_phone("918881753999")
-        self.assertEqual(phone, "918881753999")
+        phone = module.sanitize_phone("12345678901")
+        self.assertEqual(phone, "12345678901")
         self.assertTrue(module.is_valid_phone(phone))
 
     def test_rejects_short_or_non_numeric_number(self):
         self.assertFalse(module.is_valid_phone("123"))
-        self.assertFalse(module.is_valid_phone("918881753abc"))
+        self.assertFalse(module.is_valid_phone("1234567890abc"))
 
     def test_saves_plain_and_data_uri_base64(self):
         encoded = "aGVsbG8="
@@ -39,10 +39,10 @@ class WhatsAppOsintTests(unittest.TestCase):
     def test_get_request_uses_phone_query(self):
         response = object()
         with patch.object(module.requests, "get", return_value=response) as get:
-            result = module.fetch_endpoint("918881753999", "test-key", "/about")
+            result = module.fetch_endpoint("12345678901", "test-key", "/about")
         self.assertIs(result, response)
         get.assert_called_once()
-        self.assertEqual(get.call_args.kwargs["params"], {"phone": "918881753999"})
+        self.assertEqual(get.call_args.kwargs["params"], {"phone": "12345678901"})
 
     def test_business_response_dict_is_supported(self):
         response = Mock()
@@ -57,7 +57,7 @@ class WhatsAppOsintTests(unittest.TestCase):
         output = StringIO()
         with patch.object(module.requests, "post", return_value=response):
             with redirect_stdout(output):
-                module.process_business_verification("918881753999", "test-key")
+                module.process_business_verification("12345678901", "test-key")
         text = output.getvalue()
         self.assertIn("Is WhatsApp Business: True", text)
         self.assertIn("Test Business", text)
