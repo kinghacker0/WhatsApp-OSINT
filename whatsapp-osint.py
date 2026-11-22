@@ -46,7 +46,7 @@ def show_banner():
     print("\n" + Style.BRIGHT + Fore.GREEN + "WhatsApp OSINT Tool" + Style.RESET_ALL + "\n")
 
 def sanitize_phone(raw: str) -> str:
-    return re.sub(r"[^\d]", "", raw)
+    return re.sub(r"\D", "", raw or "")
 
 def is_valid_phone(p: str) -> bool:
     return p.isdigit() and 8 <= len(p) <= 15
@@ -61,17 +61,22 @@ def show_menu():
 def fetch_endpoint(phone: str, api_key: str, endpoint: str, method: str = "GET"):
     headers = {"x-rapidapi-key": api_key, "x-rapidapi-host": API_HOST}
     url = "https://whatsapp-osint.p.rapidapi.com" + endpoint
-    try:
-        if method == "GET":
-            return requests.get(url, headers=headers, params={"phone": phone}, timeout=30)
-        elif method == "POST":
-            return requests.post(url, headers=headers, data=phone, timeout=30)
-    except requests.RequestException as e:
-        raise e
+    if method == "GET":
+        return requests.get(url, headers=headers, params={"phone": phone}, timeout=30)
+    if method == "POST":
+        return requests.post(url, headers=headers, json={"phone": phone}, timeout=30)
+    raise ValueError(f"Unsupported HTTP method: {method}")
 
 def save_b64(b64_str: str, path: str) -> bool:
     try:
-        img = base64.b64decode(b64_str, validate=True)
+        value = (b64_str or "").strip()
+        if value.lower().startswith("data:image"):
+            value = value.split(",", 1)[1]
+        value = "".join(value.split())
+        value += "=" * (-len(value) % 4)
+        img = base64.b64decode(value, validate=True)
+        if not img:
+            return False
         with open(path, "wb") as f:
             f.write(img)
         return True
@@ -140,8 +145,9 @@ def process_user_status(phone: str, api_key: str):
         print(f"   📱 Number: {phone}")
         
         if "about" in data:
-            if data['about'] and data['about'].strip():
-                print(f"   📝 Status: {data['about']}")
+            about = data.get("about")
+            if isinstance(about, str) and about.strip():
+                print(f"   📝 Status: {about}")
             else:
                 print("   📝 Status: No custom status")
         elif "status" in data:
@@ -179,11 +185,18 @@ def process_business_verification(phone: str, api_key: str):
         print(f"\n🏢 {Fore.CYAN}WhatsApp Business Verification:{Style.RESET_ALL}")
         print(f"   📱 Number: {phone}")
 
-        if isinstance(data, list) and len(data) > 0:
+        business_data = data
+        if isinstance(data, list) and data:
             business_data = data[0]
-            if "isBusiness" in business_data:
-                is_biz = business_data['isBusiness']
-                if is_biz and is_biz != "false" and "Not a Business Account" not in str(is_biz) and "Not Registered" not in str(is_biz):
+
+        if isinstance(business_data, dict):
+            if "is_business" in business_data:
+                is_biz = business_data["is_business"]
+                print(f"   {'✅' if is_biz else '❌'} Is WhatsApp Business: {is_biz}")
+            elif "isBusiness" in business_data:
+                is_biz = business_data["isBusiness"]
+                is_biz_text = str(is_biz).lower()
+                if is_biz is True or (is_biz_text not in ("false", "0", "none", "") and "Not " not in str(is_biz)):
                     print(f"   ✅ Is WhatsApp Business: {is_biz}")
                 elif "Not a Business Account" in str(is_biz):
                     print("   ❌ Not a Business Account (personal)")
@@ -191,8 +204,14 @@ def process_business_verification(phone: str, api_key: str):
                     print("   ❌ Not registered on WhatsApp")
                 else:
                     print("   ❌ Not a Business Account")
-            if "verifiedName" in business_data and business_data['verifiedName']:
-                print(f"   🏪 Verified Name: {business_data['verifiedName']}")
+
+            business_name = business_data.get("business_name") or business_data.get("verifiedName")
+            if business_name:
+                print(f"   🏪 Verified Name: {business_name}")
+            if business_data.get("verification_status"):
+                print(f"   ✅ Verification Status: {business_data['verification_status']}")
+            if business_data.get("business_category"):
+                print(f"   🏷️ Category: {business_data['business_category']}")
             if "query" in business_data:
                 print(f"   🔍 Query: {business_data['query']}")
         else:
@@ -236,6 +255,8 @@ def process_device_info(phone: str, api_key: str):
                 print(f"   🔢 Total Devices: {data['devices']}")
             else:
                 print("   ℹ️ No device information found")
+        elif isinstance(data.get("total_devices"), int):
+            print(f"   🔢 Total Devices: {data['total_devices']}")
         if "message" in data:
             print(f"   ℹ️ {data['message']}")
         if "devices" not in data and "message" not in data:
